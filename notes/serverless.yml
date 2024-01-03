@@ -11,12 +11,25 @@ provider:
 functions:
   createNode:
     handler: handler.createNote
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: !GetAtt notesTable.Arn
     events:
       - http:
           method: post
           path: notes
+
   updateNode:
     handler: handler.updateNote
+    environment:
+      NOTES_TABLE_NAME: "notes"
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem # Include UpdateItem action
+        Resource: !GetAtt notesTable.Arn
     events:
       - http:
           method: put
@@ -24,6 +37,11 @@ functions:
 
   deleteNode:
     handler: handler.deleteNote
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: !GetAtt notesTable.Arn
     events:
       - http:
           method: delete
@@ -31,19 +49,30 @@ functions:
 
   getAllNotes:
     handler: handler.getAllNotes
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: !GetAtt notesTable.Arn
     events:
       - http:
           method: get
           path: notes
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+plugins:
+  - serverless-iam-roles-per-function
+
+resources:
+  Resources:
+    notesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: notes
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: notesId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: notesId
+            KeyType: HASH
+# Followed by functions definitions
