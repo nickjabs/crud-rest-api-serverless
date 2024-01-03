@@ -1,21 +1,6 @@
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-    }
-    h1 {
-      color: #333;
-    }
-    p {
-      color: #666;
-    }
-    img {
-      max-width: 100%;
-      height: auto;
-      margin-top: 20px;
-    }
-  </style>
-</head>
+ 
+
 <body>
   <h1>Serverless Notes Application</h1>
   <p>
